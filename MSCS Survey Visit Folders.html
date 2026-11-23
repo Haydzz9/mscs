@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MSCS Survey Visit Folders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a document index. Header and tab bar on top, then either a grid of the four folders or a list of Areas I to X with direct Drive links. */
+:root {
+  --bg: #f3f4f1;
+  --panel: #ffffff;
+  --ink: #1c2633;
+  --muted: #5b6672;
+  --line: #d9ddd8;
+  --accent: #1d5c63;
+  --accent-ink: #ffffff;
+  --mark: #a8481f;
+  --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12181f; --panel: #1a232d; --ink: #e6ebf0; --muted: #9aa6b2;
+    --line: #2c3845; --accent: #6cc2c9; --accent-ink: #0d1a1c; --mark: #e8956a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12181f; --panel: #1a232d; --ink: #e6ebf0; --muted: #9aa6b2;
+  --line: #2c3845; --accent: #6cc2c9; --accent-ink: #0d1a1c; --mark: #e8956a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 400 16px/1.55 var(--font-body);
+}
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; border-radius: 4px; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+header { padding: 36px 0 20px; border-bottom: 1px solid var(--line); }
+.kicker { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--mark); font-weight: 600; margin: 0 0 8px; }
+h1 { font: 700 clamp(28px, 5vw, 42px)/1.1 var(--font-display); margin: 0 0 10px; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+nav { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--line); z-index: 2; }
+nav .wrap { display: flex; gap: 4px; overflow-x: auto; padding-top: 8px; padding-bottom: 8px; }
+nav button {
+  font: 500 15px var(--font-body); color: var(--ink); background: transparent;
+  border: 1px solid transparent; border-radius: 6px; padding: 8px 14px; cursor: pointer; white-space: nowrap;
+}
+nav button:hover { border-color: var(--line); background: var(--panel); }
+nav button[aria-current="page"] { background: var(--accent); color: var(--accent-ink); }
+main { padding: 28px 0 56px; }
+h2 { font: 600 26px/1.2 var(--font-display); margin: 0 0 6px; text-wrap: balance; }
+.sub { color: var(--muted); margin: 0 0 22px; max-width: 64ch; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-bottom: 36px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--accent); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.card h3 { font: 600 19px/1.25 var(--font-display); margin: 0; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; flex: 1; }
+.btn { display: inline-block; align-self: flex-start; text-decoration: none; font-weight: 600; font-size: 14px; color: var(--accent-ink); background: var(--accent); padding: 8px 14px; border-radius: 6px; }
+.btn:hover { filter: brightness(1.1); }
+.btn.alt { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.tablewrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; }
+th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--line); font-size: 15px; vertical-align: baseline; }
+th { font-size: 13px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.roman { font-family: var(--font-display); font-weight: 700; color: var(--mark); white-space: nowrap; width: 80px; }
+ul.areas { list-style: none; margin: 0; padding: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+ul.areas li { display: flex; gap: 16px; align-items: baseline; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+ul.areas li:last-child { border-bottom: 0; }
+ul.areas .name { display: flex; gap: 14px; align-items: baseline; }
+ul.areas .roman { font: 700 17px var(--font-display); color: var(--mark); min-width: 52px; }
+.topline { display: flex; gap: 12px; flex-wrap: wrap; margin: 0 0 20px; }
+.note { margin-top: 30px; padding: 14px 16px; border-left: 4px solid var(--mark); background: var(--panel); font-size: 15px; color: var(--muted); max-width: 70ch; }
+footer { border-top: 1px solid var(--line); padding: 18px 0 40px; color: var(--muted); font-size: 14px; }
+@media (max-width: 480px) { th, td { padding: 10px 12px; } }
+@media (prefers-reduced-motion: no-preference) { .btn { transition: filter .15s; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <p class="kicker">2026 survey visit, Level 1</p>
+    <h1>MSCS 1st Survey Visit</h1>
+    <p class="lede">Links to the evidence folders for the visit. Each Area from I to X has a folder under the Self Survey, the Compliance Report and the Program Performance Profile.</p>
+  </div>
+</header>
+<nav aria-label="Sections"><div class="wrap" id="tabs"></div></nav>
+<main><div class="wrap" id="view"></div></main>
+<footer><div class="wrap">The documents stay in Google Drive. Links open the folder in a new tab.</div></footer>
+
+<script>
+var ROOT = "1uKuIE0M9rPi0GJERolmZCrrV5ZNOg1ma";
+var AREAS = [
+  ["I", "VMGO"], ["II", "Faculty"], ["III", "Curriculum and Instruction"],
+  ["IV", "Support to Students"], ["V", "Research"], ["VI", "Extension"],
+  ["VII", "Library"], ["VIII", "Physical Plant and Facilities"],
+  ["IX", "Laboratories"], ["X", "Administration"]
+];
+var SECTIONS = [
+  { id: "self-survey", title: "Self Survey", folder: "1fnTvFqubZDfrLoH7kexSYdPOQ5VM0Nn_",
+    blurb: "The program's self-assessment, with one folder for each Area.",
+    areas: ["1CFC4e37o4nYoCTMRzaaP24iS12vqnSz6","1qoOAIpVJ1-mCwkuOdWaWVr6glpntd1Ak","1umFUZO0624_hI7PEzfQsc7wT7UVjjdJK","1GBBJO4W0LKLf1phUdanzC-H9Gd-zgBcu","18XNddQc9fMs6H7ucJsTqySg2m9GcC3nN","1lxz_OCMcLt-in1exkwnOX5gssv7KzApp","1ZjuJBVyBaTdao20JZAqgR-Qu9y-9_fZn","17iOOr77LtXNNWX8f4qPlp0Qb6jnIr0K4","1Sjr5W-Cj0DFa2qM0v0FbvJ11nSWFmsG-","1F_BFvVjhD-4Gru2T6nFzfy3Pn9rnU1_D"] },
+  { id: "compliance", title: "Compliance Report", folder: "1a97AYWkGE8zvNX4GyLP5gZTKnrGc-JH0",
+    blurb: "Compliance reports and exhibits for each Area.",
+    areas: ["1tzeNDB23tcc4pzh-dMpT5jfuvQnMqQc6","1jI2lKhPiv9an0oygpNATzhFewffJs4FU","1oD8jqkcZwrZl8ZwhG_gt9T3EV_vDS5M7","1KAcLcB_Iw8QOWCfG8-TsuS5C7cD7jdLn","1LGI87gmOuBmiOTxQIelF2hUoPLlaQMuY","1mIVeUnHOK2RY77o1REf1tLRSLR-xw5ch","1oxUMict1RzzPMh5n1bs0I0kqb2HxBGs3","12-FpmmWvuGkKdohY-JM2A157OsrIEl5Y","1jZveV63ku3WnOpeKhhy1Jw2btJW_TwFX","1_xQIPElhacclK2Tjtp9k1aFNyx-KA-0u"] },
+  { id: "ppp", title: "Program Performance Profile", folder: "1HHy9MXnLeyYOD4icL4cifujQRiF8H0Ao",
+    blurb: "The program performance profile (PPP) files for each Area.",
+    areas: ["1q_jVp4_HQqZlM8LvnWRf-s_kEsq-bG63","1n60HhVUKRJNEX8UwYdT3fCAasXtXha3_","1gCsPk6xa2IyWn-VFXIE0-5M_mao1xlha","1m7GYuEtRQihwTajH7xmi5HvOzVdqtUPh","1Boca8WlynqhKGkirIZKWeeA-HK5gkeXw","16Sc8k7PNjLPC8JpKovp1EgNFeJqtAoSj","1y6zP6ipBTSvsxi3fi6di8Ne5HnITi_zi","1HscQNpTFJkVhQk6HfMJt4eHVrrBm68J1","1I0G8QIKziwuNxiWUZ_xtStHwCA2Ju7Zt","1hqH1W7S65jzNRt4JU5WEvgDD-PI7s8fm"] },
+  { id: "instruments", title: "Survey Instruments", folder: "1KbwETYdfaJnyKQiV_s_wAyRFRJhCuyvS",
+    blurb: "The survey instruments and parameter forms used during the visit.",
+    areas: null }
+];
+function url(id) { return "https://drive.google.com/drive/folders/" + id; }
+function el(tag, attrs, html) {
+  var e = document.createElement(tag);
+  for (var k in attrs || {}) e.setAttribute(k, attrs[k]);
+  if (html != null) e.innerHTML = html;
+  return e;
+}
+function link(id, text, cls) {
+  return '<a' + (cls ? ' class="' + cls + '"' : '') + ' href="' + url(id) + '" target="_blank" rel="noopener">' + text + '</a>';
+}
+var tabs = document.getElementById("tabs");
+var view = document.getElementById("view");
+var NAV = [{ id: "home", title: "Overview" }].concat(SECTIONS.map(function (s) { return { id: s.id, title: s.title }; }));
+
+function home() {
+  var h = '<h2>Evidence folders</h2><p class="sub">Open a whole folder, or go straight to one Area in the table below.</p><div class="cards">';
+  SECTIONS.forEach(function (s) {
+    h += '<div class="card"><h3>' + s.title + '</h3><p>' + s.blurb + '</p>' +
+      link(s.folder, "Open folder", "btn") + '</div>';
+  });
+  h += '</div><h2>Find an Area</h2><p class="sub">Each cell opens that Area\'s folder in Google Drive.</p>';
+  h += '<div class="tablewrap"><table><thead><tr><th>Area</th><th>Name</th><th>Self Survey</th><th>Compliance</th><th>Profile</th></tr></thead><tbody>';
+  AREAS.forEach(function (a, i) {
+    h += '<tr><td class="roman">' + a[0] + '</td><td>' + a[1] + '</td>' +
+      '<td>' + link(SECTIONS[0].areas[i], "Open") + '</td>' +
+      '<td>' + link(SECTIONS[1].areas[i], "Open") + '</td>' +
+      '<td>' + link(SECTIONS[2].areas[i], "Open") + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<p class="note">Everything here is stored in a shared Google Drive. If a link asks for access, request it from the folder owner. Sign in with the university account that has been given access.</p>';
+  return h;
+}
+function section(s) {
+  var h = '<h2>' + s.title + '</h2><p class="sub">' + s.blurb + '</p><div class="topline">' + link(s.folder, "Open whole folder", "btn") + '</div>';
+  if (s.areas) {
+    h += '<ul class="areas">';
+    AREAS.forEach(function (a, i) {
+      h += '<li><span class="name"><span class="roman">' + a[0] + '</span><span>' + a[1] + '</span></span>' +
+        link(s.areas[i], "Open folder", "btn alt") + '</li>';
+    });
+    h += '</ul>';
+  } else {
+    h += '<p class="sub">This folder holds the forms in one place. Open it to see every file.</p>';
+  }
+  return h;
+}
+function render() {
+  var id = (location.hash || "#home").slice(1);
+  var cur = NAV.filter(function (n) { return n.id === id; })[0] || NAV[0];
+  tabs.innerHTML = "";
+  NAV.forEach(function (n) {
+    var b = el("button", { type: "button" }, n.title);
+    if (n.id === cur.id) b.setAttribute("aria-current", "page");
+    b.addEventListener("click", function () { location.hash = n.id; });
+    tabs.appendChild(b);
+  });
+  var s = SECTIONS.filter(function (x) { return x.id === cur.id; })[0];
+  view.innerHTML = s ? section(s) : home();
+  document.title = (s ? s.title + " | " : "") + "MSCS Survey Visit Folders";
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", render);
+render();
+</script>
+</body>
+</html>
